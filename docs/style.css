@@ -1,0 +1,166 @@
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f6f5fb;
+  --ink: #201e2b;
+  --muted: #626073;
+  --accent: #5E35B1;
+  --accent-dark: #3d1f82;
+  --line: #e7e4f1;
+  --code-bg: #17161f;
+  --code-ink: #d7d4e8;
+  --radius: 14px;
+  --max: 1060px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+a { color: var(--accent); }
+
+/* ---------- nav ---------- */
+.nav {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-inner { display: flex; align-items: center; gap: 24px; height: 62px; }
+.brand { font-weight: 700; text-decoration: none; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+.brand .mark {
+  background: var(--accent); color: #fff;
+  border-radius: 7px; padding: 2px 7px; font-size: 14px; letter-spacing: .5px;
+}
+.nav nav { display: flex; gap: 18px; margin-left: auto; }
+.nav nav a { text-decoration: none; color: var(--muted); font-size: 15px; }
+.nav nav a:hover { color: var(--accent); }
+.nav .gh { font-size: 14px; text-decoration: none; font-weight: 600; }
+@media (max-width: 700px) { .nav nav { display: none; } }
+
+/* ---------- hero ---------- */
+.hero {
+  background:
+    radial-gradient(900px 380px at 85% -10%, rgba(94,53,177,.14), transparent 60%),
+    radial-gradient(700px 320px at -10% 10%, rgba(0,137,123,.10), transparent 60%),
+    var(--bg);
+  padding: 70px 0 64px;
+}
+.kicker {
+  text-transform: uppercase; letter-spacing: 2px; font-size: 13px;
+  font-weight: 700; color: var(--accent); margin: 0 0 10px;
+}
+.hero h1 {
+  font-size: clamp(34px, 6vw, 58px);
+  line-height: 1.08; margin: 0 0 18px; letter-spacing: -.5px;
+}
+.lede { max-width: 640px; color: var(--muted); font-size: 18px; margin: 0 0 28px; }
+code { background: #efeafb; color: var(--accent-dark); border-radius: 6px; padding: 1px 6px; font-size: .9em; }
+
+/* ---------- terminal mock ---------- */
+.term {
+  background: #0f1025;
+  border-radius: var(--radius);
+  box-shadow: 0 24px 60px rgba(32,30,43,.28);
+  max-width: 700px; overflow: hidden; margin: 0 0 30px;
+}
+.term-bar { display: flex; gap: 7px; padding: 12px 16px; background: rgba(255,255,255,.05); }
+.term-bar span { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
+.term-bar span:nth-child(2) { background: #febc2e; }
+.term-bar span:nth-child(3) { background: #28c840; }
+.term pre {
+  margin: 0; padding: 18px 20px; overflow-x: auto;
+  color: #b8d7ff; font: 13px/1.55 "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+/* ---------- button ---------- */
+.cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn {
+  display: inline-block; padding: 12px 22px; border-radius: 999px;
+  text-decoration: none; font-weight: 600; font-size: 15px;
+  border: 1px solid var(--line); color: var(--ink); background: #fff;
+}
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary:hover { background: var(--accent-dark); }
+.btn:hover { border-color: var(--accent); }
+
+/* ---------- sections ---------- */
+.section { padding: 72px 0; }
+.section.alt { background: var(--bg-alt); }
+.section h2 { font-size: 30px; margin: 0 0 8px; letter-spacing: -.4px; }
+.section-notes { color: var(--muted); max-width: 640px; margin: 0 0 28px; }
+
+.cols3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.card {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px; box-shadow: 0 8px 24px rgba(32,30,43,.05);
+}
+.card h3 { margin: 0 0 8px; font-size: 18px; }
+.card p { margin: 0; color: var(--muted); font-size: 15.5px; line-height: 1.55; }
+.section.alt .card { background: #fff; }
+
+/* ---------- pipeline ---------- */
+.pipeline { display: grid; gap: 16px; margin: 0 0 34px; }
+.step {
+  display: grid; grid-template-columns: 54px 1fr; gap: 18px; align-items: start;
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px 22px;
+}
+.step .num {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--accent); color: #fff; font-weight: 700; font-size: 20px;
+  display: grid; place-items: center; font-family: ui-monospace, monospace;
+}
+.step h3 { margin: 2px 0 6px; font-size: 18px; }
+.step p { margin: 0; color: var(--muted); font-size: 15.5px; }
+
+.flow {
+  background: var(--code-bg); color: var(--code-ink);
+  border-radius: var(--radius); padding: 18px 20px; overflow-x: auto;
+  font: 13px/1.5 ui-monospace, Consolas, monospace;
+}
+
+/* ---------- icon demo ---------- */
+.icon-demo { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin: 30px 0; }
+.icon {
+  width: 64px; height: 64px; border-radius: 14px; color: #fff;
+  font-weight: 700; font-size: 30px; display: grid; place-items: center;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.08), 0 8px 20px rgba(32,30,43,.18);
+}
+.icon.letter:nth-child(1) { background: #8E24AA; }
+.icon.letter:nth-child(2) { background: #039BE5; }
+.icon.letter:nth-child(3) { background: #43A047; }
+.icon.letter:nth-child(4) { background: #F4511E; }
+.icon.letter:nth-child(5) { background: #00838F; }
+.arrow { font-size: 26px; color: var(--muted); }
+.caption { margin: 0; color: var(--muted); font-size: 15px; max-width: 360px; }
+
+.code {
+  background: var(--code-bg); color: var(--code-ink);
+  border-radius: var(--radius); padding: 18px 20px; overflow-x: auto;
+  font: 13.5px/1.6 ui-monospace, Consolas, monospace;
+}
+
+/* ---------- table ---------- */
+table { width: 100%; border-collapse: collapse; margin-top: 18px; background: #fff; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: 15px; }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+.section.alt table { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+
+/* ---------- plain list / footer ---------- */
+.plain-list { margin: 18px 0 0; padding-left: 20px; color: var(--muted); }
+.plain-list li { margin: 6px 0; }
+
+.footer { border-top: 1px solid var(--line); background: var(--bg-alt); padding: 30px 0; }
+.footer p { color: var(--muted); font-size: 14px; margin: 0; }
+
+@media (max-width: 600px) {
+  .hero { padding: 46px 0 40px; }
+  .section { padding: 54px 0; }
+  .step { grid-template-columns: 1fr; }
+}

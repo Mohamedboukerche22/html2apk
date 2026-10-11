@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>html2apk — HTML websites as Android apps</title>
+<meta name="description" content="Turn an HTML/CSS/JS website into a signed Android APK. Plain command line tool, no framework, no hosting.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235E35B1'/%3E%3Ctext x='50' y='68' font-size='52' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'%3E2%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top"><span class="mark">&gt;_</span> html2apk</a>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="#usage">Usage</a>
+      <a href="#icon">The icon</a>
+      <a href="#install">Install</a>
+    </nav>
+    <a class="gh" href="https://github.com/Mohamedboukerche22/html2apk" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <p class="kicker">A zero-host command line tool</p>
+    <h1>Your HTML website,<br>as an Android app.</h1>
+    <p class="lede">
+      Point html2apk at a folder of HTML, CSS and JavaScript and it gives you a
+      signed <code>.apk</code> file. The page runs inside a WebView, so your
+      code works exactly like it does in the browser. No app store, no
+      accounts, no hosting.
+    </p>
+    <div class="term" aria-label="Example usage">
+      <div class="term-bar"><span></span><span></span><span></span></div>
+      <pre>$ html2apk my-website/ -n "My App" --logo icon.png
+[html2apk] App name : My App
+[html2apk] Package  : com.html2apk.myapp
+[html2apk] Icon     : custom logo (bg #FFFFFF)
+[html2apk] Compiling resources (aapt2)...
+[html2apk] Linking resources...
+[html2apk] Compiling Java...
+[html2apk] Converting to DEX (d8)...
+[html2apk] Packaging APK...
+[html2apk] Signing APK...
+[html2apk] Done: /home/demo/my-app.apk (38 KB)
+$</pre>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#install">Get started</a>
+      <a class="btn" href="#how">See how it works</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="what">
+  <div class="wrap">
+    <h2>A tiny app, your real web code</h2>
+    <div class="cols3">
+      <div class="card">
+        <h3>Same files</h3>
+        <p>Everything in your folder gets bundled as-is. index.html, style.css,
+        app.js, images — untouched. Refreshing the app ships a new APK.</p>
+      </div>
+      <div class="card">
+        <h3>Real browser engine</h3>
+        <p>Pages render in the device WebView. JavaScript, localStorage, CSS
+        grids, offline storage — if it works in Chrome, it works in the app.</p>
+      </div>
+      <div class="card">
+        <h3>No build system</h3>
+        <p>No Gradle, no Node, no npm install of 900 packages. One Python file
+        talks to the Android build tools directly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="section-notes">
+      Two halves get glued together: a small Android app that shows your page,
+      and the APK that is wrapped around it.
+    </p>
+
+    <div class="pipeline">
+      <div class="step">
+        <div class="num">1</div>
+        <h3>The container app</h3>
+        <p>html2apk writes one Java Activity that owns a WebView. On launch the
+        Activity loads <code>assets/www/index.html</code> from the app's own
+        private storage. JavaScript is on, the back button walks the page
+        history before leaving the app. That is the whole program.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3>Your site goes in assets</h3>
+        <p>Your files are copied into <code>assets/www/</code>. That folder is
+        embedded in the APK, so the app works offline and does not need to
+        fetch anything on first run. Internet permission is included anyway,
+        for pages that call APIs.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3>Resources &amp; the icon</h3>
+        <p><code>aapt2</code> compiles the resources (strings, theme, launcher
+        icons) and links them with the manifest, producing the base APK and a
+        generated <code>R.java</code>.</p>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <h3>Java to dex</h3>
+        <p><code>javac</code> compiles the Activity and <code>R.java</code>
+        against Android's <code>android.jar</code>, then <code>d8</code>
+        converts the bytecode into <code>classes.dex</code>, the format phones
+        actually run.</p>
+      </div>
+      <div class="step">
+        <div class="num">5</div>
+        <h3>Pack, align, sign</h3>
+        <p>The dex file goes into the APK, <code>zipalign</code> aligns the
+        data, and <code>apksigner</code> signs it with a keystore that
+        html2apk creates the first time you build. A signed APK is what
+        Android will install.</p>
+      </div>
+    </div>
+
+    <pre class="flow" aria-label="Build pipeline diagram">
+┌────────────┐   ┌─────────────┐   ┌──────────────┐   ┌──────────┐   ┌─────────────┐
+│ index.html │──▶│  assets/    │──▶│  aapt2       │──▶│  javac   │──▶│  d8         │
+│ style.css  │   │  www/       │   │  compile+link│   │  R.java  │   │  classes.dex│
+│ app.js     │   │  (bundled)  │   │  → base.apk  │   │   + Main │   │             │
+└────────────┘   └─────────────┘   └──────────────┘   └──────────┘   └──────┬──────┘
+                                                               zip + zipalign + apksigner
+                                                               └──────────────▶  app.apk
+</pre>
+  </div>
+</section>
+
+<section class="section" id="icon">
+  <div class="wrap">
+    <h2>If there is no logo, it draws one</h2>
+    <p class="section-notes">
+      Want an icon but have no image handy? Give the tool a name and it paints
+      one: the first letter of the app name, white on a background colour that
+      is derived from the name itself.
+    </p>
+    <div class="icon-demo">
+      <div class="icon letter">H</div>
+      <div class="icon letter">W</div>
+      <div class="icon letter">P</div>
+      <div class="icon letter">Z</div>
+      <div class="icon letter">K</div>
+      <div class="arrow">→</div>
+      <p class="caption">"notes", "webmail", "planner", "zoom", "kiosk" —
+      each name picks its own colour automatically. Same name always gets the
+      same colour.</p>
+    </div>
+    <div class="cols3">
+      <div class="card">
+        <h3>Every density</h3>
+        <p>Launcher icons are generated for mdpi through xxxhdpi, plus an
+        adaptive icon (foreground + background) for newer Android.</p>
+      </div>
+      <div class="card">
+        <h3>Your real logo</h3>
+        <p>Pass <code>--logo logo.png</code> and the tool reuses your artwork.
+        JPG, PNG and even SVG (converted on the fly) are accepted.</p>
+      </div>
+      <div class="card">
+        <h3>Pick the colour</h3>
+        <p>Not a fan of the picked colour? Force your own with
+        <code>--icon-bg 0F9D58</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="usage">
+  <div class="wrap">
+    <h2>Usage</h2>
+    <pre class="code"># build from the current folder's index.html
+html2apk my-website/
+
+# single HTML file
+html2apk page.html -n "My Page"
+
+# set name, logo and output file
+html2apk my-website/ -n "My App" -l logo.png -o app.apk
+
+# custom package id, different entry file
+html2apk my-website/ --package com.me.app --entry app.html</pre>
+
+    <table>
+      <thead><tr><th>Option</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>input</code></td><td>folder, or a single HTML file</td></tr>
+        <tr><td><code>-n, --name</code></td><td>app name shown under the icon</td></tr>
+        <tr><td><code>-l, --logo</code></td><td>path to your logo image</td></tr>
+        <tr><td><code>-o, --output</code></td><td>output APK path</td></tr>
+        <tr><td><code>--entry</code></td><td>entry HTML file inside the folder (default index.html)</td></tr>
+        <tr><td><code>--package</code></td><td>Android package id</td></tr>
+        <tr><td><code>--icon-bg</code></td><td>hex colour for the icon background</td></tr>
+        <tr><td><code>--min-sdk</code></td><td>minimum API level (default 24)</td></tr>
+        <tr><td><code>--version-name</code></td><td>version shown to Android (default 1.0)</td></tr>
+        <tr><td><code>--keystore</code></td><td>sign with your own key instead of the generated one</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="install">
+  <div class="wrap">
+    <h2>Install</h2>
+    <p class="section-notes">One file to clone, one symlink, one pip package.
+    The Android SDK downloads itself on the first build.</p>
+    <pre class="code">git clone https://github.com/Mohamedboukerche22/html2apk.git
+cd html2apk
+ln -s "$(pwd)/html2apk.py" ~/.local/bin/html2apk
+pip install pillow</pre>
+    <ul class="plain-list">
+      <li>Python 3.9+</li>
+      <li>A JDK in the 17-21 range</li>
+      <li>Pillow, but only for the auto-drawn icon — skip it if you always pass <code>--logo</code></li>
+    </ul>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/Mohamedboukerche22/html2apk" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <p>html2apk — MIT licensed. Built because rewriting a website in Java to
+    make it an app never made sense.</p>
+  </div>
+</footer>
+
+</body>
+</html>
